@@ -13,14 +13,30 @@ const routes: Array<RouteConfig> = [
   },
   {
     component: () => import('../layouts/DashboardLayout.vue'),
-    path: '/:role/dashboard/',
+    path: '/:role/',
     children: [
       {
-        component: () => import('../views/dashboard.vue'),
-        path: '',
-        name: 'Dashboard',
+        component: () => import('../views/user-profile.vue'),
+        path: 'profile',
+        name: 'UserProfile',
         meta: {
           authRole: [RoleEnum.Administrator, RoleEnum.Customer],
+        },
+      },
+      {
+        component: () => import('../views/customers-list.vue'),
+        path: 'customers',
+        name: 'CustomersList',
+        meta: {
+          authRole: [RoleEnum.Administrator],
+        },
+      },
+      {
+        component: () => import('../views/customer.vue'),
+        path: 'customer/:actionType',
+        name: 'Customer',
+        meta: {
+          authRole: [RoleEnum.Administrator],
         },
       },
     ],
