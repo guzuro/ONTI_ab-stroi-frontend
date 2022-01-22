@@ -29,14 +29,14 @@ export default class RegistrationForm extends Vue {
   registrationFields: RegistrationData = {
     login: '',
     password: '',
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     role: RoleEnum.Administrator,
   };
 
   @Emit()
-  doAuth(): RegistrationData {
-    return this.registrationFields;
+  doAuth(): { data: RegistrationData; action: string } {
+    return { data: this.registrationFields, action: 'registration' };
   }
 }
 </script>

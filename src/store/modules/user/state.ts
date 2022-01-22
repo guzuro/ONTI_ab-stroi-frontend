@@ -17,7 +17,7 @@ export default {
   state,
   mutations: {
     SET_USER_TO_STORE: (state: State, value: any) => {
-      state.userData = value.profile;
+      state.userData = value;
     },
     SET_AUTH_STATE: (state: State, value: any) => {
       state.isAuth = value;
@@ -43,6 +43,9 @@ export default {
     },
     getUserRole(state: State): boolean {
       return state.userData.role;
+    },
+    getUserData(state: State): any {
+      return state.userData;
     },
   },
 };

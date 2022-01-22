@@ -15,36 +15,35 @@
       >
         <div class="p-1">
           <div class="is-flex is-align-items-end mb-5">
-            <img style="height: 65px; width: 65px"
-                 src="../assets/images/logo-icon.svg"
-            />
+            <img style="height: 65px; width: 65px" src="../assets/images/logo-icon.svg" />
             <p class="sidebar-title has-text-weight-bold is-size-5">
-              Управление <br>
+              Управление <br />
               продажами
             </p>
           </div>
           <b-menu>
             <b-menu-list label="Навигация">
-              <b-menu-list>
-                <b-menu-item label="Dashboard"
-                             icon="link"
-                             tag="router-link"
-                             :to="{name:'Dashboard'}"></b-menu-item>
-              </b-menu-list>
+              <b-menu-item
+                label="Мой профиль"
+                icon="link"
+                tag="router-link"
+                :to="{ name: 'UserProfile' }"
+              />
 
-              <b-menu-item icon="database" label="Каталог">
-                <b-menu-item icon="cart" label="Номенклатура"
-                             tag="router-link"
-                             :to="{name: 'Products'}"/>
-                <b-menu-item icon="format-list-bulleted-square"
-                             label="Категории"
-                             tag="router-link"
-                             :to="{name: 'Categories'}"/>
-              </b-menu-item>
-            </b-menu-list>
-
-            <b-menu-list label="Actions">
-              <b-menu-item label="Logout"></b-menu-item>
+              <b-menu-item
+                v-if="isAdmin"
+                icon="cart"
+                label="Клиенты"
+                tag="router-link"
+                :to="{ name: 'CustomersList' }"
+              />
+              <!-- <b-menu-item
+                icon="format-list-bulleted-square"
+                label="Категории"
+                tag="router-link"
+                :to="{ name: 'Categories' }"
+              /> -->
+              <b-menu-item label="Выйти" @click="logout"></b-menu-item>
             </b-menu-list>
           </b-menu>
         </div>
@@ -59,6 +58,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
+import AuthService from '@/services/AuthService';
 
 @Component
 export default class DashboardLayout extends Vue {
@@ -71,15 +71,28 @@ export default class DashboardLayout extends Vue {
   reduce = false;
 
   open = true;
+
+  get isAdmin(): boolean {
+    return this.$store.getters['userModule/getUserRole'] === 'ADMINISTRATOR';
+  }
+
+  logout(): void {
+    AuthService.logout().then(() => {
+      this.$store.commit('userModule/RESET_IS_AUTHENTICATED');
+      this.$store.commit('userModule/RESET_USER_STATE');
+      this.$router.push({
+        name: 'Login',
+      });
+    });
+  }
 }
 </script>
 
 <style lang="scss">
-@import "../assets/styles/bulma/sidebar.scss";
+@import '../assets/styles/bulma/sidebar.scss';
 
 .dashboard-layout {
   height: 100%;
-
 }
 
 .menu-list a:hover {

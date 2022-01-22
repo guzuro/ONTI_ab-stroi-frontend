@@ -37,12 +37,15 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import LoginForm from '@/components/LoginForm.vue';
+import { LoginData, RegistrationData } from '@/types/types';
+import AuthService from '@/services/AuthService';
+import UserService from '@/services/UserService';
 
 @Component({
   components: { LoginForm },
 })
 export default class Auth extends Vue {
-  authType = 'registration';
+  authType = 'login';
 
   changeAuthType(authType: string): void {
     this.authType = authType;
@@ -57,8 +60,24 @@ export default class Auth extends Vue {
     },
   };
 
-  doAuth = (aaa: any) => {
-    console.log(aaa);
+  doAuth = (userInfo: { data: LoginData | RegistrationData; action: string }): void => {
+    if (userInfo.action === 'login') {
+      AuthService.login(userInfo.data as LoginData).then(() => {
+        UserService.getUserData().then((response) => {
+          this.$store.dispatch('userModule/setUserToStore', response);
+          this.$store.dispatch('userModule/setAuthState', true);
+          this.$router.push({
+            name: 'UserProfile',
+            params: {
+              role: (response as any).role,
+            },
+          });
+        });
+      });
+    }
+    if (userInfo.action === 'registration') {
+      AuthService.register(userInfo.data as RegistrationData);
+    }
   };
 }
 </script>

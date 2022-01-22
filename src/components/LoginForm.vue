@@ -24,8 +24,8 @@ export default class LoginForm extends Vue {
   };
 
   @Emit()
-  doAuth(): LoginData {
-    return this.loginData;
+  doAuth(): { data: LoginData; action: string } {
+    return { action: 'login', data: this.loginData };
   }
 }
 </script>

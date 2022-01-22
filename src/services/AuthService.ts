@@ -4,7 +4,7 @@ import BaseApi from './BaseApi';
 export default class AuthService {
   static BASE_PATH = '/auth';
 
-  static async register(reqBody: RegistrationData): Promise<any> {
+  static async register(reqBody: RegistrationData): Promise<void> {
     const registerPath = '/register';
     return BaseApi.sendRequest(AuthService.BASE_PATH + registerPath, reqBody);
   }
