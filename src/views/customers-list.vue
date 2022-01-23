@@ -9,9 +9,6 @@
 
     <b-table
       :data="data"
-      :checked-rows.sync="checkedRows"
-      checkable
-      :checkbox-position="'left'"
       :pagination-simple="true"
       :paginated="true"
       :per-page="20"
@@ -43,23 +40,41 @@
       </b-table-column>
 
       <b-table-column field="order_id" label="№ заказа" sortable v-slot="props">
-        {{ props.row.order_id }}
+        <div
+          class="is-inline-block is-clickable"
+          @click="handleOrderClickIcon(props.row.id, props.row.order_id)"
+        >
+          <b-tooltip
+            type="is-warning"
+            :label="
+              props.row.order_id === null ? 'Сформировать заказ' : 'Просмотр заказа'
+            "
+          >
+            <b-icon
+              :icon="props.row.order_id === null ? 'plus' : 'eye'"
+              type="is-success"
+            ></b-icon>
+          </b-tooltip>
+        </div>
       </b-table-column>
 
-      <b-table-column field="action" label="Действие" v-slot="props">
+      <!-- <b-table-column field="action" label="Действие" v-slot="props">
         <div>
-          <div class="is-inline-block is-clickable" @click="editIconHandler(props.row)">
-            <b-tooltip type="is-warning" label="Изменить">
+          <div
+            class="is-inline-block is-clickable"
+            @click="editIconHandler(props.row.id, props.row.order_id)"
+          >
+            <b-tooltip type="is-warning" label="Просмотр заявки">
               <b-icon icon="pencil" type="is-warning"></b-icon>
             </b-tooltip>
-          </div>
-          <div class="is-inline-block is-clickable" @click="removeIconHandler(props.row)">
+          </div> -->
+      <!-- <div class="is-inline-block is-clickable" @click="removeIconHandler(props.row)">
             <b-tooltip type="is-danger" label="Удалить">
               <b-icon icon="delete" type="is-danger"></b-icon>
             </b-tooltip>
-          </div>
-        </div>
-      </b-table-column>
+          </div> -->
+      <!-- </div>
+      </b-table-column> -->
     </b-table>
   </div>
 </template>
@@ -72,6 +87,8 @@ import Component from 'vue-class-component';
 
 @Component
 export default class CustomersList extends Vue {
+  data: Array<RoleCustomer> = [];
+
   addButtonHandler(): void {
     this.$router.push({
       name: 'Customer',
@@ -81,7 +98,29 @@ export default class CustomersList extends Vue {
     });
   }
 
-  data: Array<RoleCustomer> = [];
+  handleOrderClickIcon(customerId: number, orderId: number | null): void {
+    if (typeof orderId === 'number') {
+      this.$router.push({
+        name: 'Order',
+        params: {
+          customerId: customerId.toString(),
+          actionType: 'edit',
+        },
+        query: {
+          orderId: orderId.toString(),
+        },
+      });
+    }
+    if (orderId === null) {
+      this.$router.push({
+        name: 'Order',
+        params: {
+          customerId: customerId.toString(),
+          actionType: 'new',
+        },
+      });
+    }
+  }
 
   created(): void {
     UserService.getClients().then((response: Array<RoleCustomer>) => {

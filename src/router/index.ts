@@ -39,6 +39,14 @@ const routes: Array<RouteConfig> = [
           authRole: [RoleEnum.Administrator],
         },
       },
+      {
+        component: () => import('../views/order.vue'),
+        path: 'customer/:customerId/order/:actionType',
+        name: 'Order',
+        meta: {
+          authRole: [RoleEnum.Administrator, RoleEnum.Customer],
+        },
+      },
     ],
   },
 ];
