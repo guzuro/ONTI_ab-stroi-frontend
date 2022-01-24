@@ -7,11 +7,12 @@ export default class BaseApi {
   static async sendRequest(
     method: string,
     body: any = {},
-    headers: AxiosRequestHeaders = {},
+    headers: any = {},
   ): Promise<any> {
     try {
       const { data } = await Vue.axios.post(BaseApi.BASE_API + method, body, {
         withCredentials: true,
+        ...headers,
       });
       return data;
     } catch (error: any) {
