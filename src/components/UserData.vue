@@ -1,6 +1,6 @@
 <template>
   <div class="client-data">
-    <div class="card">
+    <div class="card" v-if="user">
       <div class="card-header p-2">Информация о пользователе</div>
       <div class="card-content">
         <div class="content">
