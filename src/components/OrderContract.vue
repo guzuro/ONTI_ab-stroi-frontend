@@ -3,25 +3,59 @@
     <div class="card">
       <div class="card-header p-2">Контракт</div>
       <div class="card-content">
-        <div v-if="contract !== null">info</div>
-        <div>
+        <div v-if="contract === null || !contract.contract_main" class="mb-5">
           Контракт еще не загружен, загрузите его в систему, чтобы клиент подписал его
+        </div>
+        <div class="mb-5">
           <div class="is-flex is-justify-content-space-between">
-            <b-field label="Контракт к подписи">
-              <b-upload v-model="contractMain" drag-drop>
-                <section class="section">
-                  <div class="content has-text-centered">
-                    <p>
-                      <b-icon icon="upload" size="is-large"> </b-icon>
-                    </p>
-                    <p>Нажмите или перетащите файл для его загрузки</p>
+            <div class="is-flex is-flex-direction-column">
+              <b-field label="Контракт к подписи">
+                <b-upload
+                  v-model="contracFMain"
+                  drag-drop
+                  :disabled="$store.getters['userModule/getUserRole'] === 'CUSTOMER'"
+                >
+                  <section class="section">
+                    <div class="content has-text-centered">
+                      <p>
+                        <b-icon icon="upload" size="is-large"> </b-icon>
+                      </p>
+                      <p>Нажмите или перетащите файл для его загрузки</p>
+                    </div>
+                  </section>
+                </b-upload>
+              </b-field>
+              <div v-if="contract.contract_main || contractMain">
+                <div class="is-flex is-flex-direction-column">
+                  {{ contract.contract_main || contractMain.name }}
+                  <div class="is-flex">
+                    <b-button
+                      v-if="contract.contract_main"
+                      class="flex is-align-self-flex-start"
+                      type="is-danger"
+                      icon-left="delete"
+                      @click="removeFileFromContract('contract_main')"
+                    >
+                      Удалить файл
+                    </b-button>
+                    <b-button
+                      v-if="contract.contract_main"
+                      class="ml-2 flex is-align-self-flex-start"
+                      @click="$emit('download', contract.contract_main)"
+                    >
+                      Скачать файл
+                    </b-button>
                   </div>
-                </section>
-              </b-upload>
-              <div v-if="contract.contract_main"></div>
-            </b-field>
+                </div>
+              </div>
+            </div>
+            <div class="is-flex is-flex-direction-column"></div>
             <b-field label="Подписанный контракт">
-              <b-upload v-model="contractSigned" drag-drop>
+              <b-upload
+                v-model="contractSigned"
+                drag-drop
+                :disabled="$store.getters['userModule/getUserRole'] === 'ADMINISTRATOR'"
+              >
                 <section class="section">
                   <div class="content has-text-centered">
                     <p>
@@ -32,16 +66,40 @@
                 </section>
               </b-upload>
             </b-field>
+            <div v-if="contract.contract_signed">
+              <div class="is-flex is-flex-direction-column">
+                {{ contract.contract_signed }}
+                <div class="is-flex">
+                  <b-button
+                    v-if="contract.contract_signed"
+                    class="flex is-align-self-flex-start"
+                    type="is-danger"
+                    icon-left="delete"
+                    @click="removeFileFromContract('contract_signed')"
+                  >
+                    Удалить файл
+                  </b-button>
+                  <b-button
+                    v-if="contract.contract_signed"
+                    class="ml-2 flex is-align-self-flex-start"
+                    @click="$emit('download', contract.contract_signed)"
+                  >
+                    Скачать файл
+                  </b-button>
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
+        <div class="is-flex is-justify-content-end">
+          <b-button class="mt-5" @click="saveContract">Сохранить контракт</b-button>
         </div>
       </div>
     </div>
-    <b-button @click="saveContract">СОхранить</b-button>
   </div>
 </template>
 
 <script lang="ts">
-import OrderService from '@/services/OrderService';
 import Vue from 'vue';
 import { Component, Prop } from 'vue-property-decorator';
 
@@ -55,6 +113,20 @@ export default class OrderContract extends Vue {
 
   contractSigned: null | Blob = null;
 
+  removeFileFromContract(contractType: string): void {
+    const formData = new FormData();
+    formData.set('order_id', this.orderId);
+    if (contractType === 'contract_main') {
+      formData.set('contract_main', '');
+      formData.set('contract_signed', this.contract.contract_signed);
+    }
+    if (contractType === 'contract_signed') {
+      formData.set('contract_signed', this.contract.contract_main);
+      formData.set('contract_signed', '');
+    }
+    this.$emit('save', formData);
+  }
+
   saveContract(): void {
     const formData = new FormData();
     formData.set('order_id', this.orderId);
@@ -64,15 +136,9 @@ export default class OrderContract extends Vue {
     if (this.contractSigned !== null) {
       formData.set('contract_signed', this.contractSigned);
     }
-
-    OrderService.saveContract(formData).then((response) => {
-      OrderService.getContract({ order_id: Number.parseFloat(this.orderId) }).then(
-        (contract: any) => {
-          console.log(contract, 'getttttttttttttttt');
-        },
-      );
-      //   console.log(this.saveByteArray([response.contract.contract_main], 'example.txt'));
-    });
+    this.contractMain = null;
+    this.contractSigned = null;
+    this.$emit('save', formData);
   }
 }
 </script>
