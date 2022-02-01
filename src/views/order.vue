@@ -14,7 +14,14 @@
         @save="saveContract"
         @download="downloadContractFile"
       />
-      <smeta-contract v-if="order.smeta" :smeta="order.smeta" :order-id="orderId" />
+      <div v-if="$store.getters['userModule/getUserRole'] === 'ADMINISTRATOR'">
+        <order-smeta
+          v-if="order.smeta !== undefined"
+          :smeta="order.smeta"
+          :order-id="orderId"
+          @save="saveSmeta"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -27,11 +34,13 @@ import UserData from '@/components/UserData.vue';
 import OrderContract from '@/components/OrderContract.vue';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
+import OrderSmeta from '@/components/OrderSmeta.vue';
 
 @Component({
   components: {
     UserData,
     OrderContract,
+    OrderSmeta,
   },
 })
 export default class Order extends Vue {
@@ -65,6 +74,15 @@ export default class Order extends Vue {
         saveAs(res.data, contractType);
       });
   };
+
+  saveSmeta(smeta: any[]): void {
+    OrderService.saveSmeta({ order_id: Number.parseFloat(this.orderId), smeta }).then(
+      (response) => {
+        console.log('OK');
+        this.getOrder();
+      },
+    );
+  }
 
   get customerId(): number {
     return Number.parseFloat(this.$route.params.customerId);

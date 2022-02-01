@@ -11,7 +11,7 @@
             <div class="is-flex is-flex-direction-column">
               <b-field label="Контракт к подписи">
                 <b-upload
-                  v-model="contracFMain"
+                  v-model="contractMain"
                   drag-drop
                   :disabled="$store.getters['userModule/getUserRole'] === 'CUSTOMER'"
                 >
