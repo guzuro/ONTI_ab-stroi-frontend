@@ -9,7 +9,7 @@
               <b-input v-model="smetaItem.item_name"></b-input>
             </b-field>
             <b-field label="quantity">
-              <b-input v-model="smetaItem.quantity"></b-input>
+              <b-input v-model="smetaItem.quantity" @input="makeItemTotal"></b-input>
             </b-field>
             <b-field label="unit">
               <b-select placeholder="Select a name" v-model="smetaItem.unit">
@@ -23,12 +23,12 @@
               </b-select>
             </b-field>
             <b-field label="price">
-              <b-input v-model="smetaItem.price"></b-input>
+              <b-input v-model="smetaItem.price" @input="makeItemTotal"></b-input>
             </b-field>
             <b-field label="item_total">
-              <b-input v-model="smetaItem.item_total"></b-input>
+              <b-input disabled :value="smetaItem.item_tыotal"></b-input>
             </b-field>
-            <b-button @click="addSmetaItem">Добавить</b-button>
+            <b-button @click="saveSmetaItem">Сохранить</b-button>
           </div>
         </div>
       </div>
@@ -36,15 +36,65 @@
     <div class="card">
       <div class="card-header p-2">Смета</div>
       <div class="card-content">
-        <div v-if="smetaCopy && smetaCopy.length">
-          <div v-for="(sm, index) in smetaCopy" :key="index">
-            {{ sm }}
+        <div v-if="smetaCopy && smetaCopy.length" class="list">
+          <b-table
+            :data="smetaCopy"
+            :pagination-simple="true"
+            :paginated="true"
+            :per-page="20"
+            :sort-icon="'arrow-up'"
+            :sort-icon-size="'is-small'"
+          >
+            <b-table-column
+              field="item_name"
+              label="item_name"
+              searchable
+              sortable
+              v-slot="props"
+            >
+              {{ props.row.item_name }}
+            </b-table-column>
 
-            <b-button type="is-danger" icon-right="delete" @click="setToRemove(index)" />
-          </div>
+            <b-table-column field="quantity" label="quantity" sortable v-slot="props">
+              {{ props.row.quantity }}
+            </b-table-column>
+
+            <b-table-column field="unit" label="unit" sortable v-slot="props">
+              {{ props.row.unit }}
+            </b-table-column>
+
+            <b-table-column field="price" label="price" sortable v-slot="props">
+              {{ props.row.price }}
+            </b-table-column>
+
+            <b-table-column field="item_total" label="item_total" sortable v-slot="props">
+              {{ props.row.item_total }}
+            </b-table-column>
+
+            <b-table-column
+              field="actions"
+              label="actions"
+              sortable
+              v-slot="props"
+              v-if="props.row.id !== -100"
+            >
+              <div class="is-flex">
+                <b-button
+                  type="is-danger"
+                  icon-right="delete"
+                  @click="setToRemove(props.index)"
+                />
+                <b-button
+                  type="is-warning"
+                  icon-right="pencil"
+                  @click="editItem(props)"
+                />
+              </div>
+            </b-table-column>
+          </b-table>
         </div>
-        <b-button @click="isModalActive = true">Добавить позицию</b-button>
         <b-button @click="$emit('save', smetaCopy)">Сохранить смету</b-button>
+        <b-button @click="isModalActive = true">Добавить позицию</b-button>
       </div>
     </div>
   </div>
@@ -67,39 +117,83 @@ export default class OrderSmeta extends Vue {
   ];
 
   smetaItem = {
+    id: null,
     item_name: '',
     unit: '',
     quantity: 0,
     price: 0,
     item_total: 0,
-    to_delete: null,
+    to_delete: false,
   };
 
   smetaCopy: Array<any> = [];
 
   isModalActive = false;
 
-  addSmetaItem(): void {
+  selectedIndex = -1;
+
+  makeItemTotal(): void {
+    this.smetaItem.item_total = this.smetaItem.quantity * this.smetaItem.price;
+  }
+
+  saveSmetaItem(): void {
+    if (this.selectedIndex !== -1) {
+      this.smetaCopy.slice(this.selectedIndex, 1);
+    }
+    if (this.smetaItem.id) {
+      this.smetaCopy = this.smetaCopy.filter(
+        (item: any) => item.id !== this.smetaItem.id,
+      );
+    }
     this.smetaCopy.push(this.smetaItem);
     this.$emit('save', this.smetaCopy);
     this.smetaItem = {
+      id: null,
       item_name: '',
       unit: '',
       quantity: 0,
       price: 0,
       item_total: 0,
-      to_delete: null,
+      to_delete: false,
     };
   }
 
   setToRemove(index: number): void {
-    this.smetaCopy[index].to_delete = true;
+    const toDelete = this.smetaCopy[index];
+    if (toDelete.id) {
+      this.smetaCopy[index].to_delete = !this.smetaCopy[index].to_delete;
+    } else {
+      this.smetaCopy.splice(index, 1);
+    }
   }
+
+  editItem(smetaItem: any): void {
+    this.smetaItem = { ...smetaItem.row };
+    this.selectedIndex = smetaItem.index;
+    this.isModalActive = true;
+  }
+
+  getTotal = (smetaItems: any[]) => {
+    const initialValue = 0;
+
+    // eslint-disable-next-line implicit-arrow-linebreak
+    return smetaItems.reduce(
+      (accumulator, currentValue) => accumulator + currentValue.item_total,
+      initialValue,
+    );
+  };
 
   mounted(): void {
     if (this.smeta !== undefined) {
-      this.smetaCopy = [...this.smeta];
-      console.log(this.smeta);
+      const smetaItems = [...this.smeta];
+      console.log(this.getTotal(smetaItems));
+
+      smetaItems.push({
+        id: -100,
+        item_name: 'ИТОГ',
+        item_total: this.getTotal(smetaItems),
+      });
+      this.smetaCopy = [...smetaItems];
     }
   }
 }
