@@ -28,6 +28,11 @@ export default class OrderService {
     });
   }
 
+  static async approveContract(reqBody: any): Promise<any> {
+    const approveContractPath = '/contract/approve';
+    return BaseApi.sendRequest(OrderService.BASE_PATH + approveContractPath, reqBody);
+  }
+
   static async getContract(reqBody: any): Promise<any> {
     const saveContractPath = '/contract/get';
     return BaseApi.sendRequest(OrderService.BASE_PATH + saveContractPath, reqBody);
