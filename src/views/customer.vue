@@ -45,7 +45,6 @@ export default class Customer extends Vue {
   }
 
   handleSaveClick(): void {
-    console.log(this.customerModel);
     UserService.createCustomer(this.customerModel).then(() => {
       this.userCreated = true;
       this.$router.push({

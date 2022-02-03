@@ -13,8 +13,9 @@
         :order-id="orderId"
         @save="saveContract"
         @download="downloadContractFile"
+        @approve="approveContract"
       />
-      <div v-if="$store.getters['userModule/getUserRole'] === 'ADMINISTRATOR'">
+      <div v-if="order.contract.contract_approved === true">
         <order-smeta
           v-if="order.smeta !== undefined"
           :smeta="order.smeta"
@@ -50,11 +51,7 @@ export default class Order extends Vue {
     OrderService.createOrder({ client_id: this.customerId }).then(
       // eslint-disable-next-line camelcase
       (response: { order_id: number }) => {
-        OrderService.getOrderById({ order_id: response.order_id }).then(
-          (createdOrder: any) => {
-            console.log('OK, CREATED');
-          },
-        );
+        OrderService.getOrderById({ order_id: response.order_id });
       },
     );
   }
@@ -75,13 +72,20 @@ export default class Order extends Vue {
       });
   };
 
+  approveContract(contractToApprove: any): void {
+    OrderService.approveContract(contractToApprove).then(() => {
+      this.getOrder();
+    });
+  }
+
   saveSmeta(smeta: any[]): void {
-    OrderService.saveSmeta({ order_id: Number.parseFloat(this.orderId), smeta }).then(
-      (response) => {
-        console.log('OK');
-        this.getOrder();
-      },
-    );
+    const smetaToReq = smeta.filter((i: any) => i.id !== -100);
+    OrderService.saveSmeta({
+      order_id: Number.parseFloat(this.orderId),
+      smeta: smetaToReq,
+    }).then(() => {
+      this.getOrder();
+    });
   }
 
   get customerId(): number {

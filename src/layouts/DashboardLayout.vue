@@ -37,6 +37,23 @@
                 tag="router-link"
                 :to="{ name: 'CustomersList' }"
               />
+
+              <b-menu-item
+                v-if="!isAdmin"
+                label="Заявка"
+                icon="link"
+                tag="router-link"
+                :to="{
+                  name: 'Order',
+                  params: {
+                    customerId: $store.state.userModule.userData.id,
+                    actionType: 'edit',
+                  },
+                  query: {
+                    orderId: $store.state.userModule.userData.order_id,
+                  },
+                }"
+              />
               <!-- <b-menu-item
                 icon="format-list-bulleted-square"
                 label="Категории"
