@@ -34,7 +34,12 @@
       </div>
     </b-modal>
     <div class="card">
-      <div class="card-header p-2">Смета</div>
+      <div class="card-header p-2">
+        Смета
+        <div v-if="smetaApproved" class="ml-2" style="color: green">
+          (Смета утверждена)
+        </div>
+      </div>
       <div class="card-content">
         <div v-if="smetaCopy && smetaCopy.length" class="list">
           <b-table
@@ -76,9 +81,9 @@
               label="actions"
               sortable
               v-slot="props"
-              v-if="props.row.id !== -100"
+              v-if="$store.getters['userModule/getUserRole'] === 'ADMINISTRATOR'"
             >
-              <div class="is-flex">
+              <div class="is-flex" v-if="props.row.id !== -100">
                 <b-button
                   type="is-danger"
                   icon-right="delete"
@@ -93,8 +98,19 @@
             </b-table-column>
           </b-table>
         </div>
-        <b-button @click="$emit('save', smetaCopy)">Сохранить смету</b-button>
-        <b-button @click="isModalActive = true">Добавить позицию</b-button>
+        <div
+          v-if="
+            $store.getters['userModule/getUserRole'] === 'ADMINISTRATOR' && !smetaApproved
+          "
+        >
+          <b-button @click="$emit('save', smetaCopy)">Сохранить смету</b-button>
+          <b-button @click="isModalActive = true">Добавить позицию</b-button>
+        </div>
+        <div
+          v-if="$store.getters['userModule/getUserRole'] === 'CUSTOMER' && !smetaApproved"
+        >
+          <b-button @click="$emit('approve')">Утвердить смету</b-button>
+        </div>
       </div>
     </div>
   </div>
@@ -110,6 +126,8 @@ export default class OrderSmeta extends Vue {
   @Prop() smeta!: Array<any>;
 
   @Prop() orderId!: string;
+
+  @Prop() smetaApproved!: boolean;
 
   unitOptions = [
     { label: 'Киллограмм', value: 'kg' },
@@ -184,17 +202,15 @@ export default class OrderSmeta extends Vue {
   };
 
   mounted(): void {
-    if (this.smeta !== undefined) {
-      const smetaItems = [...this.smeta];
-      console.log(this.getTotal(smetaItems));
+    const smetaItems = [...this.smeta];
+    console.log(this.getTotal(smetaItems));
 
-      smetaItems.push({
-        id: -100,
-        item_name: 'ИТОГ',
-        item_total: this.getTotal(smetaItems),
-      });
-      this.smetaCopy = [...smetaItems];
-    }
+    smetaItems.push({
+      id: -100,
+      item_name: 'ИТОГ',
+      item_total: this.getTotal(smetaItems),
+    });
+    this.smetaCopy = [...smetaItems];
   }
 }
 </script>

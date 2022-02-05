@@ -1,7 +1,12 @@
 <template>
   <div class="order-contract">
     <div class="card">
-      <div class="card-header p-2">Договор о намерениях</div>
+      <div class="card-header p-2">
+        Договор о намерениях
+        <div class="ml-2" style="color: green" v-if="contract.contract_approved">
+          (Договор о намерениях утвержден)
+        </div>
+      </div>
       <div class="card-content">
         <div v-if="contract === null || !contract.contract_main" class="mb-5">
           Договор о намерениях еще не загружен, загрузите его в систему, чтобы клиент
@@ -14,7 +19,10 @@
                 <b-upload
                   v-model="contractMain"
                   drag-drop
-                  :disabled="$store.getters['userModule/getUserRole'] === 'CUSTOMER'"
+                  :disabled="
+                    $store.getters['userModule/getUserRole'] === 'CUSTOMER' ||
+                    contract.contract_approved
+                  "
                 >
                   <section class="section">
                     <div class="content has-text-centered">
@@ -33,7 +41,8 @@
                     <b-button
                       v-if="
                         contract.contract_main &&
-                        $store.getters['userModule/getUserRole'] === 'ADMINISTRATOR'
+                        $store.getters['userModule/getUserRole'] === 'ADMINISTRATOR' &&
+                        !contract.contract_approved
                       "
                       class="flex is-align-self-flex-start"
                       type="is-danger"
@@ -59,7 +68,10 @@
                 <b-upload
                   v-model="contractSigned"
                   drag-drop
-                  :disabled="$store.getters['userModule/getUserRole'] === 'ADMINISTRATOR'"
+                  :disabled="
+                    $store.getters['userModule/getUserRole'] === 'ADMINISTRATOR' ||
+                    contract.contract_approved
+                  "
                 >
                   <section class="section">
                     <div class="content has-text-centered">
@@ -78,7 +90,8 @@
                     <b-button
                       v-if="
                         contract.contract_signed &&
-                        $store.getters['userModule/getUserRole'] === 'CUSTOMER'
+                        $store.getters['userModule/getUserRole'] === 'CUSTOMER' &&
+                        !contract.contract_approved
                       "
                       class="flex is-align-self-flex-start"
                       type="is-danger"
@@ -101,7 +114,10 @@
             </div>
           </div>
         </div>
-        <div class="mt-5 is-flex is-justify-content-end">
+        <div
+          class="mt-5 is-flex is-justify-content-end"
+          v-if="!contract.contract_approved"
+        >
           <b-button
             class="is-success"
             v-if="

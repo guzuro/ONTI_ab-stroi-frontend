@@ -57,24 +57,6 @@
           </b-tooltip>
         </div>
       </b-table-column>
-
-      <!-- <b-table-column field="action" label="Действие" v-slot="props">
-        <div>
-          <div
-            class="is-inline-block is-clickable"
-            @click="editIconHandler(props.row.id, props.row.order_id)"
-          >
-            <b-tooltip type="is-warning" label="Просмотр заявки">
-              <b-icon icon="pencil" type="is-warning"></b-icon>
-            </b-tooltip>
-          </div> -->
-      <!-- <div class="is-inline-block is-clickable" @click="removeIconHandler(props.row)">
-            <b-tooltip type="is-danger" label="Удалить">
-              <b-icon icon="delete" type="is-danger"></b-icon>
-            </b-tooltip>
-          </div> -->
-      <!-- </div>
-      </b-table-column> -->
     </b-table>
   </div>
 </template>

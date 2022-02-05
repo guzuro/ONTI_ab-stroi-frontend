@@ -28,6 +28,20 @@ export default class OrderService {
     });
   }
 
+  static async saveOrderDoc(reqBody: any): Promise<any> {
+    const saveOrderDocPath = '/order/saveOrderDoc';
+    return BaseApi.sendRequest(OrderService.BASE_PATH + saveOrderDocPath, reqBody, {
+      headers: {
+        'Content-Type': 'multpart/form-data',
+      },
+    });
+  }
+
+  static async approveOrder(reqBody: any): Promise<any> {
+    const approveOrderPath = '/order/approveOrder';
+    return BaseApi.sendRequest(OrderService.BASE_PATH + approveOrderPath, reqBody);
+  }
+
   static async approveContract(reqBody: any): Promise<any> {
     const approveContractPath = '/contract/approve';
     return BaseApi.sendRequest(OrderService.BASE_PATH + approveContractPath, reqBody);
@@ -41,5 +55,10 @@ export default class OrderService {
   static async saveSmeta(reqBody: any): Promise<any> {
     const saveSmetaPath = '/smeta/save';
     return BaseApi.sendRequest(OrderService.BASE_PATH + saveSmetaPath, reqBody);
+  }
+
+  static async approveSmeta(reqBody: any): Promise<any> {
+    const approveSmetaPath = '/smeta/approve';
+    return BaseApi.sendRequest(OrderService.BASE_PATH + approveSmetaPath, reqBody);
   }
 }
