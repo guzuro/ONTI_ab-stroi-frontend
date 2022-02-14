@@ -5,13 +5,13 @@
         <div class="card-header p-2">Смета</div>
         <div class="card-content">
           <div class="order-smeta__add">
-            <b-field label="item_name">
+            <b-field label="Наименование">
               <b-input v-model="smetaItem.item_name"></b-input>
             </b-field>
-            <b-field label="quantity">
+            <b-field label="Количество">
               <b-input v-model="smetaItem.quantity" @input="makeItemTotal"></b-input>
             </b-field>
-            <b-field label="unit">
+            <b-field label="ед.">
               <b-select placeholder="Select a name" v-model="smetaItem.unit">
                 <option
                   v-for="option in unitOptions"
@@ -22,10 +22,10 @@
                 </option>
               </b-select>
             </b-field>
-            <b-field label="price">
+            <b-field label="Цена">
               <b-input v-model="smetaItem.price" @input="makeItemTotal"></b-input>
             </b-field>
-            <b-field label="item_total">
+            <b-field label="Итого по товару">
               <b-input disabled :value="smetaItem.item_tыotal"></b-input>
             </b-field>
             <b-button @click="saveSmetaItem">Сохранить</b-button>
@@ -52,7 +52,7 @@
           >
             <b-table-column
               field="item_name"
-              label="item_name"
+              label="Наименование"
               searchable
               sortable
               v-slot="props"
@@ -60,25 +60,30 @@
               {{ props.row.item_name }}
             </b-table-column>
 
-            <b-table-column field="quantity" label="quantity" sortable v-slot="props">
+            <b-table-column field="quantity" label="Количество" sortable v-slot="props">
               {{ props.row.quantity }}
             </b-table-column>
 
-            <b-table-column field="unit" label="unit" sortable v-slot="props">
+            <b-table-column field="unit" label="ед." sortable v-slot="props">
               {{ props.row.unit }}
             </b-table-column>
 
-            <b-table-column field="price" label="price" sortable v-slot="props">
-              {{ props.row.price }}
+            <b-table-column field="price" label="Цена" sortable v-slot="props">
+              <div v-if="props.row.id !== -100">{{ props.row.price }} руб.</div>
             </b-table-column>
 
-            <b-table-column field="item_total" label="item_total" sortable v-slot="props">
-              {{ props.row.item_total }}
+            <b-table-column
+              field="item_total"
+              label="Итого за позицию"
+              sortable
+              v-slot="props"
+            >
+              {{ props.row.item_total }} руб.
             </b-table-column>
 
             <b-table-column
               field="actions"
-              label="actions"
+              label="Действия"
               sortable
               v-slot="props"
               v-if="$store.getters['userModule/getUserRole'] === 'ADMINISTRATOR'"
@@ -91,6 +96,7 @@
                 />
                 <b-button
                   type="is-warning"
+                  class="ml-2"
                   icon-right="pencil"
                   @click="editItem(props)"
                 />

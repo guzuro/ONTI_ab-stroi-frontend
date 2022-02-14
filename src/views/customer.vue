@@ -1,6 +1,9 @@
 <template>
-  <div class="customer p-4">
-    {{ customerModel }}
+  <div class="customer p-6">
+    <div class="is-flex is-justify-content-end">
+      <b-button @click="routeBack" class="mb-5">Назад</b-button>
+    </div>
+
     <customer-form :customer="customerModel" @input="onCustomerModelChange" />
 
     <div class="customer__actions is-justify-content-end is-flex">
@@ -80,6 +83,10 @@ export default class Customer extends Vue {
     } else {
       next();
     }
+  }
+
+  routeBack(): void {
+    this.$router.back();
   }
 
   created(): void {

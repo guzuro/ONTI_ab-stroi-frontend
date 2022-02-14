@@ -1,5 +1,5 @@
 <template>
-  <div class="user-profile">
+  <div class="user-profile p-6">
     <user-data :user="userData" />
   </div>
 </template>

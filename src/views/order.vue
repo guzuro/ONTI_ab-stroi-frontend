@@ -1,21 +1,36 @@
 <template>
-  <div class="order">
+  <div class="order p-6">
     <div v-if="$route.params.actionType === 'new'">
       <b-button @click="createOrder">Создать заказ</b-button>
     </div>
     <div v-if="order !== null">
-      <h3>Заказ № {{ orderId }}</h3>
+      <div class="is-flex is-justify-content-space-between">
+        <h3>Заказ № {{ orderId }}</h3>
+        <div class="is-flex is-flex-wrap-wrap">
+          <b-button @click="routeBack" class="mb-5">Назад</b-button>
+          <div
+            class="ml-2"
+            v-if="
+              order.order_approved &&
+              order.contract !== null &&
+              order.contract.contract_approved &&
+              order.smeta_approved
+            "
+          >
+            <b-button @click="goToProjectPage">Детали строительства</b-button>
+          </div>
+        </div>
+      </div>
       <user-data :user="order.client_id" />
       <hr />
       <order-contract
-        v-if="order.contract"
         :contract="order.contract"
         :order-id="orderId"
         @save="saveContract"
         @download="downloadContractFile"
         @approve="approveContract"
       />
-      <div v-if="order.contract.contract_approved === true">
+      <div v-if="order.contract !== null && order.contract.contract_approved === true">
         <order-smeta
           v-if="order.smeta !== undefined"
           :smeta="order.smeta"
@@ -212,7 +227,9 @@ export default class Order extends Vue {
     OrderService.createOrder({ client_id: this.customerId }).then(
       // eslint-disable-next-line camelcase
       (response: { order_id: number }) => {
-        OrderService.getOrderById({ order_id: response.order_id });
+        OrderService.getOrderById({ order_id: response.order_id }).then(() => {
+          this.$router.back();
+        });
       },
     );
   }
@@ -266,6 +283,16 @@ export default class Order extends Vue {
     return this.$route.query.orderId.toString();
   }
 
+  goToProjectPage(): void {
+    this.$router.push({
+      name: 'Project',
+      params: {
+        customerId: this.customerId.toString(),
+        orderId: this.orderId,
+      },
+    });
+  }
+
   getOrder(): void {
     if (this.$route.query.orderId) {
       // eslint-disable-next-line camelcase
@@ -275,6 +302,10 @@ export default class Order extends Vue {
         this.order = response;
       });
     }
+  }
+
+  routeBack(): void {
+    this.$router.back();
   }
 
   created(): void {

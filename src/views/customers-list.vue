@@ -1,5 +1,5 @@
 <template>
-  <div class="customers-list p-2">
+  <div class="customers-list p-6">
     <div class="is-flex is-justify-content-space-between">
       <h1>Все клиенты</h1>
       <b-button class="is-right" type="is-warning" @click="addButtonHandler">
