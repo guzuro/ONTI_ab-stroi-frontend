@@ -22,11 +22,11 @@
                 </option>
               </b-select>
             </b-field>
-            <b-field label="Цена">
+            <b-field label="Цена (руб.)">
               <b-input v-model="smetaItem.price" @input="makeItemTotal"></b-input>
             </b-field>
-            <b-field label="Итого по товару">
-              <b-input disabled :value="smetaItem.item_tыotal"></b-input>
+            <b-field label="Итого по товару (руб.)">
+              <b-input disabled :value="smetaItem.item_total"></b-input>
             </b-field>
             <b-button @click="saveSmetaItem">Сохранить</b-button>
           </div>
@@ -49,12 +49,11 @@
             :per-page="20"
             :sort-icon="'arrow-up'"
             :sort-icon-size="'is-small'"
+            :row-class="(row, index) => row.to_delete && 'is-info'">
           >
             <b-table-column
               field="item_name"
               label="Наименование"
-              searchable
-              sortable
               v-slot="props"
             >
               {{ props.row.item_name }}
@@ -115,7 +114,13 @@
         <div
           v-if="$store.getters['userModule/getUserRole'] === 'CUSTOMER' && !smetaApproved"
         >
-          <b-button @click="$emit('approve')">Утвердить смету</b-button>
+          <b-button
+            @click="$emit('approve')"
+            :disabled="
+              $store.getters['userModule/getUserRole'] === 'CUSTOMER' && smetaCopy.length === 1
+            "
+            >Утвердить смету</b-button
+          >
         </div>
       </div>
     </div>
@@ -169,8 +174,7 @@ export default class OrderSmeta extends Vue {
         (item: any) => item.id !== this.smetaItem.id,
       );
     }
-    this.smetaCopy.push(this.smetaItem);
-    this.$emit('save', this.smetaCopy);
+    this.smetaCopy.unshift(this.smetaItem);
     this.smetaItem = {
       id: null,
       item_name: '',
@@ -209,7 +213,6 @@ export default class OrderSmeta extends Vue {
 
   mounted(): void {
     const smetaItems = [...this.smeta];
-    console.log(this.getTotal(smetaItems));
 
     smetaItems.push({
       id: -100,
@@ -220,3 +223,11 @@ export default class OrderSmeta extends Vue {
   }
 }
 </script>
+
+<style lang="scss">
+    tr.is-info {
+        background: rgba(230, 156, 153, 0.35);
+        text-decoration: line-through;
+    }
+
+</style>

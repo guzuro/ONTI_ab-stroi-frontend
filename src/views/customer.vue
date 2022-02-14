@@ -88,12 +88,5 @@ export default class Customer extends Vue {
   routeBack(): void {
     this.$router.back();
   }
-
-  created(): void {
-    if (this.$route.params.actionType === 'edit' && this.$route.query.customerId) {
-      console.log('do get user request');
-      //   this.clientModel = ''
-    }
-  }
 }
 </script>

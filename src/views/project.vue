@@ -213,7 +213,7 @@ export default class extends Vue {
       })
       .catch((err: any) => {
         if (err.code === 404) {
-          console.log(err.code);
+          console.error(err.code);
         }
       });
   }

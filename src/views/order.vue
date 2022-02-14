@@ -1,5 +1,5 @@
 <template>
-  <div class="order p-6">
+  <div class="order p-6" v-if="isLoaded">
     <div v-if="$route.params.actionType === 'new'">
       <b-button @click="createOrder">Создать заказ</b-button>
     </div>
@@ -24,6 +24,7 @@
       <user-data :user="order.client_id" />
       <hr />
       <order-contract
+        v-if="order.contract"
         :contract="order.contract"
         :order-id="orderId"
         @save="saveContract"
@@ -41,7 +42,7 @@
         />
       </div>
 
-      <div class="card">
+      <div class="card" v-if="order.smeta_approved">
         <div class="card-header p-2">
           <p>Договор на строительство</p>
           <div class="ml-2" v-if="order.order_approved" style="color: green">
@@ -108,7 +109,8 @@
                     drag-drop
                     :disabled="
                       $store.getters['userModule/getUserRole'] === 'ADMINISTRATOR' ||
-                      order.order_approved
+                      order.order_approved ||
+                      !order.order_doc_main
                     "
                   >
                     <section class="section">
@@ -159,12 +161,14 @@
               !order.order_approved
             "
             @click="approveOrder"
+            :disabled="!order.order_doc_signed || !order.order_doc_main"
           >
             Утвердить
           </b-button>
         </div>
       </div>
     </div>
+    <b-loading :is-full-page="true" v-model="isLoading" :can-cancel="true"></b-loading>
   </div>
 </template>
 
@@ -187,6 +191,10 @@ import OrderSmeta from '@/components/OrderSmeta.vue';
 })
 export default class Order extends Vue {
   order: any = null;
+
+  isLoaded = false;
+
+  isLoading = false;
 
   orderDocMain = null;
 
@@ -294,13 +302,23 @@ export default class Order extends Vue {
   }
 
   getOrder(): void {
+    this.isLoaded = false;
+    this.isLoading = true;
     if (this.$route.query.orderId) {
       // eslint-disable-next-line camelcase
       OrderService.getOrderById({
         order_id: Number.parseFloat(this.$route.query.orderId.toString()),
-      }).then((response: any) => {
-        this.order = response;
-      });
+      })
+        .then((response: any) => {
+          this.order = response;
+        })
+        .finally(() => {
+          this.isLoaded = true;
+          this.isLoading = false;
+        });
+    } else {
+      this.isLoaded = true;
+      this.isLoading = false;
     }
   }
 

@@ -15,11 +15,7 @@
       >
         <div class="p-1">
           <div class="is-flex is-align-items-end mb-5">
-            <img style="height: 65px; width: 65px" src="../assets/images/logo-icon.svg" />
-            <p class="sidebar-title has-text-weight-bold is-size-5">
-              Управление <br />
-              продажами
-            </p>
+            <p class="sidebar-title has-text-weight-bold is-size-5">Стройка</p>
           </div>
           <b-menu>
             <b-menu-list label="Навигация">
