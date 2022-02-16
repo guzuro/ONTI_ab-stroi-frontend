@@ -11,6 +11,8 @@
     "axios": "^0.25.0",
     "buefy": "^0.9.10",
     "file-saver": "^2.0.5",
+    "firebase": "^9.6.6",
+    "firebase-tools": "^10.2.0",
     "moment": "^2.29.1",
     "vue": "^2.6.11",
     "vue-axios": "^3.4.0",
