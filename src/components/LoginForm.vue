@@ -1,8 +1,8 @@
 <template>
   <div class="login-form">
     <p class="is-size-3 has-text-centered">Войти в учетную запись</p>
-    <b-field label="Логин" type="is-danger">
-      <b-input required type="text" v-model="loginData.login"> </b-input>
+    <b-field label="Логин">
+      <b-input type="text" required v-model="loginData.login"> </b-input>
     </b-field>
     <b-field label="Пароль">
       <b-input
@@ -17,7 +17,7 @@
       class="is-block ml-auto"
       type="is-success"
       @click="doAuth"
-      :disabled="!loginData.login && !loginData.password"
+      :disabled="!loginData.login || !loginData.password"
     >
       Войти
     </b-button>

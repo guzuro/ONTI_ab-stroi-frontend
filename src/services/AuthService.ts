@@ -18,4 +18,9 @@ export default class AuthService {
     const logoutPath = '/logout';
     return BaseApi.sendRequest(AuthService.BASE_PATH + logoutPath);
   }
+
+  static async checkLogin(): Promise<void> {
+    const checkLoginPath = '/checklogin';
+    return BaseApi.sendRequest(AuthService.BASE_PATH + checkLoginPath);
+  }
 }

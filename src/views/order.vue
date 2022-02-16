@@ -1,7 +1,7 @@
 <template>
   <div class="order p-6" v-if="isLoaded">
     <div v-if="$route.params.actionType === 'new'">
-      <b-button @click="createOrder">Создать заказ</b-button>
+      <b-button @click="createOrder">Сформировать заказ для клиента</b-button>
     </div>
     <div v-if="order !== null">
       <div class="is-flex is-justify-content-space-between">
@@ -77,7 +77,7 @@
                   </b-upload>
                 </b-field>
                 <div v-if="order.order_doc_main || orderDocMain">
-                  <div class="is-flex is-flex-direction-column">
+                  <div class="is-flex is-flex-direction-column mt-5">
                     {{ order.order_doc_main || orderDocMain.name }}
                     <div class="is-flex">
                       <b-button
@@ -102,7 +102,7 @@
                   </div>
                 </div>
               </div>
-              <div class="is-flex is-flex-direction-column">
+              <div class="is-flex is-flex-direction-column mt-5">
                 <b-field label="Подписанный договор">
                   <b-upload
                     v-model="orderDocSigned"
@@ -309,8 +309,8 @@ export default class Order extends Vue {
       OrderService.getOrderById({
         order_id: Number.parseFloat(this.$route.query.orderId.toString()),
       })
-        .then((response: any) => {
-          this.order = response;
+        .then(({ data }: any) => {
+          this.order = data;
         })
         .finally(() => {
           this.isLoaded = true;

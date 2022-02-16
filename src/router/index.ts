@@ -1,3 +1,5 @@
+import AuthService from '@/services/AuthService';
+import UserService from '@/services/UserService';
 import store from '@/store';
 import { RoleEnum } from '@/types/types';
 import Vue from 'vue';
@@ -67,27 +69,33 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   // TODO
-  const routeMeta = to.meta;
-  if (to.name !== 'Login' && to.name !== 'Main') {
-    if (
-      routeMeta
-      && routeMeta.authRole
-      && store.getters['userModule/isAuthenticated']
-      && routeMeta.authRole.includes(store.getters['userModule/getUserRole'])
-    ) {
-      next();
-    } else {
-      next({ path: '/login' });
-    }
+  if (to.name !== 'Login') {
+    AuthService.checkLogin().then((response: any) => {
+      if (response.status === 200) {
+        if (!Object.keys((store.state as any).userModule.userData).length) {
+          UserService.getUserData()
+            .then(({ data }) => {
+              store.dispatch('userModule/setUserToStore', data);
+              store.dispatch('userModule/setAuthState', true);
+            })
+            .then(() => {
+              if (to.path === '/') {
+                next({
+                  path: `${(store.state as any).userModule.userData.role}/profile`,
+                });
+              }
+            });
+          next();
+        } else {
+          next();
+        }
+      } else {
+        next({ path: '/login' });
+      }
+    });
   } else {
     next();
   }
-
-  // if (!to.path.includes('dashboard')) {
-  //   store.commit('userModule/RESET_IS_AUTHENTICATED');
-  //   store.commit('userModule/RESET_USER_STATE');
-  //   next();
-  // }
 });
 
 export default router;

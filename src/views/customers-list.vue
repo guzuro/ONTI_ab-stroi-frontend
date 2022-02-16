@@ -6,8 +6,10 @@
         Добавить
       </b-button>
     </div>
+    <div v-if="!data.length">Вы еще не добавили клиентов в систему.</div>
 
     <b-table
+      v-else
       :data="data"
       :pagination-simple="true"
       :paginated="true"
@@ -105,8 +107,8 @@ export default class CustomersList extends Vue {
   }
 
   created(): void {
-    UserService.getClients().then((response: Array<RoleCustomer>) => {
-      this.data = response;
+    UserService.getClients().then(({ data }: any) => {
+      this.data = data;
     });
   }
 }

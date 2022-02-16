@@ -180,7 +180,7 @@ export default class extends Vue {
 
   doPayment(): void {
     ProjectService.doPayment({ id: this.project.id, prepayment_success: true }).then(
-      (response) => {
+      () => {
         this.getProject();
       },
     );
@@ -195,7 +195,7 @@ export default class extends Vue {
       client_id: Number.parseFloat(this.$route.params.customerId),
       order_id: Number.parseFloat(this.$route.params.orderId),
       project_end_date: moment(this.projectEndDate).format('YYYY-MM-DD'),
-    }).then((response) => {
+    }).then(() => {
       this.getProject();
     });
   }
@@ -204,11 +204,11 @@ export default class extends Vue {
     ProjectService.getProject({
       order_id: Number.parseInt(this.$route.params.orderId, 10),
     })
-      .then((response) => {
-        if (!response.id) {
+      .then(({ data }) => {
+        if (!data.id) {
           this.project = null;
         } else {
-          this.project = response;
+          this.project = data;
         }
       })
       .catch((err: any) => {

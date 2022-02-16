@@ -2,27 +2,23 @@
   <div class="auth">
     <div class="columns">
       <div class="column is-two-fifths auth-left is-align-self-center has-shadow">
-        <div class="columns">
-          <div class="column">
-            <b-button
-              class="is-block ml-auto"
-              type="is-success"
-              @click="changeAuthType('login')"
-            >
-              Логин
-            </b-button>
-          </div>
-          <div class="column">
-            <b-button
-              class="is-block ml-auto"
-              type="is-success"
-              @click="changeAuthType('registration')"
-            >
-              Нет аккаунта? Зарегистрируйтесь
-            </b-button>
-          </div>
+        <div class="is-flex is-flex-direction-column is-justify-content-end">
+          <b-button
+            class="is-block ml-auto"
+            type="is-success"
+            @click="changeAuthType('login')"
+          >
+            Логин
+          </b-button>
+          <b-button
+            class="is-block mt-2 ml-auto"
+            type="is-success"
+            @click="changeAuthType('registration')"
+          >
+            Нет аккаунта? Зарегистрируйтесь
+          </b-button>
         </div>
-        <div class="auth-right__content px-5">
+        <div class="auth-right__content px-5 mt-5">
           <component :is="component[authType].view" @do-auth="doAuth" />
         </div>
       </div>
@@ -63,13 +59,13 @@ export default class Auth extends Vue {
   doAuth = (userInfo: { data: LoginData | RegistrationData; action: string }): void => {
     if (userInfo.action === 'login') {
       AuthService.login(userInfo.data as LoginData).then(() => {
-        UserService.getUserData().then((response) => {
-          this.$store.dispatch('userModule/setUserToStore', response);
+        UserService.getUserData().then(({ data }) => {
+          this.$store.dispatch('userModule/setUserToStore', data);
           this.$store.dispatch('userModule/setAuthState', true);
           this.$router.push({
             name: 'UserProfile',
             params: {
-              role: (response as any).role,
+              role: (data as any).role,
             },
           });
         });
@@ -90,6 +86,7 @@ export default class Auth extends Vue {
     background-repeat: no-repeat;
     background-size: cover;
     position: relative;
+    height: 100%;
   }
 }
 </style>

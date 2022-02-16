@@ -49,13 +49,9 @@
             :per-page="20"
             :sort-icon="'arrow-up'"
             :sort-icon-size="'is-small'"
-            :row-class="(row, index) => row.to_delete && 'is-info'">
+            :row-class="(row, index) => row.to_delete && 'is-info'"
           >
-            <b-table-column
-              field="item_name"
-              label="Наименование"
-              v-slot="props"
-            >
+            <b-table-column field="item_name" label="Наименование" v-slot="props">
               {{ props.row.item_name }}
             </b-table-column>
 
@@ -115,9 +111,11 @@
           v-if="$store.getters['userModule/getUserRole'] === 'CUSTOMER' && !smetaApproved"
         >
           <b-button
+            class="ml-2"
             @click="$emit('approve')"
             :disabled="
-              $store.getters['userModule/getUserRole'] === 'CUSTOMER' && smetaCopy.length === 1
+              $store.getters['userModule/getUserRole'] === 'CUSTOMER' &&
+              smetaCopy.length === 1
             "
             >Утвердить смету</b-button
           >
@@ -225,9 +223,8 @@ export default class OrderSmeta extends Vue {
 </script>
 
 <style lang="scss">
-    tr.is-info {
-        background: rgba(230, 156, 153, 0.35);
-        text-decoration: line-through;
-    }
-
+tr.is-info {
+  background: rgba(230, 156, 153, 0.35);
+  text-decoration: line-through;
+}
 </style>

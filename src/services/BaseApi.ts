@@ -10,11 +10,11 @@ export default class BaseApi {
     headers: any = {},
   ): Promise<any> {
     try {
-      const { data } = await Vue.axios.post(BaseApi.BASE_API + method, body, {
+      const response = await Vue.axios.post(BaseApi.BASE_API + method, body, {
         withCredentials: true,
         ...headers,
       });
-      return data;
+      return response;
     } catch (error: any) {
       console.error(error);
       return error;

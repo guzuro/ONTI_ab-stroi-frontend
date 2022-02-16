@@ -13,8 +13,8 @@
           подписал его
         </div>
         <div class="mb-5">
-          <div class="is-flex is-justify-content-space-between">
-            <div class="is-flex is-flex-direction-column">
+          <div class="is-flex is-justify-content-space-between is-flex-wrap-wrap">
+            <div class="is-flex is-flex-direction-column mt-5">
               <b-field label="Договор к подписи">
                 <b-upload
                   v-model="contractMain"
@@ -63,7 +63,7 @@
                 </div>
               </div>
             </div>
-            <div class="is-flex is-flex-direction-column">
+            <div class="is-flex is-flex-direction-column mt-5">
               <b-field label="Подписанный договор">
                 <b-upload
                   v-model="contractSigned"

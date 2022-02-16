@@ -47,11 +47,6 @@ export default class OrderService {
     return BaseApi.sendRequest(OrderService.BASE_PATH + approveContractPath, reqBody);
   }
 
-  static async getContract(reqBody: any): Promise<any> {
-    const saveContractPath = '/contract/get';
-    return BaseApi.sendRequest(OrderService.BASE_PATH + saveContractPath, reqBody);
-  }
-
   static async saveSmeta(reqBody: any): Promise<any> {
     const saveSmetaPath = '/smeta/save';
     return BaseApi.sendRequest(OrderService.BASE_PATH + saveSmetaPath, reqBody);
