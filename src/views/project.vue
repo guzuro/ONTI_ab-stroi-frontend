@@ -87,7 +87,11 @@
                     </div>
                   </div>
                   <div>
-                    <b-field class="file is-primary" :class="{ 'has-name': !!file }">
+                    <b-field
+                      v-if="$store.getters['userModule/getUserRole'] === 'ADMINISTRATOR'"
+                      class="file is-primary"
+                      :class="{ 'has-name': !!file }"
+                    >
                       <b-upload
                         v-model="file"
                         class="file-label"
