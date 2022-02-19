@@ -33,4 +33,18 @@ export default class ProjectService {
     const payStepPath = '/doStepPayment';
     return BaseApi.sendRequest(ProjectService.BASE_PATH + payStepPath, reqBody);
   }
+
+  static async uploadPhoto(reqBody: any): Promise<any> {
+    const uploadPhotoPath = '/uploadphoto';
+    return BaseApi.sendRequest(ProjectService.BASE_PATH + uploadPhotoPath, reqBody, {
+      headers: {
+        'Content-Type': 'multpart/form-data',
+      },
+    });
+  }
+
+  static async removePhoto(reqBody: any): Promise<any> {
+    const removePhotoPath = '/removephoto';
+    return BaseApi.sendRequest(ProjectService.BASE_PATH + removePhotoPath, reqBody);
+  }
 }

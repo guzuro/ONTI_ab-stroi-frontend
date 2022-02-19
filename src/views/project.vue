@@ -86,6 +86,62 @@
                       <p class="list__property_right">{{ step.end_date }}</p>
                     </div>
                   </div>
+                  <div>
+                    <b-field class="file is-primary" :class="{ 'has-name': !!file }">
+                      <b-upload
+                        v-model="file"
+                        class="file-label"
+                        @input="uploadFile(step.id)"
+                      >
+                        <span class="file-cta">
+                          <b-icon class="file-icon" icon="upload"></b-icon>
+                          <span class="file-label">Загрузить фотографии</span>
+                        </span>
+                        <span class="file-name" v-if="file">
+                          {{ file.name }}
+                        </span>
+                      </b-upload>
+                    </b-field>
+                  </div>
+                  <b-collapse
+                    v-if="step.photo.length"
+                    class="card mt-5"
+                    animation="slide"
+                    aria-id="contentIdForA11y3"
+                  >
+                    <template #trigger="props">
+                      <div
+                        class="card-header"
+                        role="button"
+                        aria-controls="contentIdForA11y3"
+                      >
+                        <p class="card-header-title">Фотог рафии строительства</p>
+                        <a class="card-header-icon">
+                          <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"> </b-icon>
+                        </a>
+                      </div>
+                    </template>
+
+                    <div class="card-content">
+                      <div class="photos">
+                        <div v-for="(img, index) in step.photo" :key="index">
+                          <div class="is-flex">
+                            <img
+                              style="width: 500px; height: 500px"
+                              :src="`http://localhost:3080/assets/static/${img.name}`"
+                            />
+                            <div>
+                              <b-button
+                                type="is-danger"
+                                icon-right="delete"
+                                @click="removePhoto(img.id)"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </b-collapse>
                 </div>
                 <footer class="card-footer p-2">
                   <div
@@ -152,6 +208,8 @@ import moment from 'moment';
 @Component
 export default class extends Vue {
   project: any = null;
+
+  file = null;
 
   newStepModel: any = {
     title: '',
@@ -220,6 +278,27 @@ export default class extends Vue {
 
   payStep(stepId: number): void {
     ProjectService.payStep({ id: stepId }).then(() => {
+      this.getProject();
+    });
+  }
+
+  uploadFile(stepId: number): void {
+    const fd = new FormData();
+    fd.append('step_id', stepId.toString());
+    if (this.file !== null) {
+      fd.append('step_photo', this.file);
+    }
+    ProjectService.uploadPhoto(fd).then(() => {
+      this.getProject();
+      this.file = null;
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  removePhoto(photoId: number): void {
+    ProjectService.removePhoto({
+      image_id: photoId,
+    }).then(() => {
       this.getProject();
     });
   }
